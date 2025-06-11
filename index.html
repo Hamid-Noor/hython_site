@@ -3,21 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نقشه راه یادگیری پایتون با هوش مصنوعی</title>
+    <title>پلتفرم آموزش پایتون با هوش مصنوعی</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chosen Palette: Warm Neutrals (Beige, Taupe, Terracotta Accent) -->
-    <!-- Application Structure Plan: A two-column layout with a fixed weekly navigation sidebar and a dynamic main content area. This structure provides a clear, linear learning path. Tabs and accordions manage information density. New AI features (concept explanation, project suggestion) are integrated directly into the curriculum flow via modals, providing on-demand learning assistance without cluttering the main UI. -->
+    <!-- Application Structure Plan: The app is now structured into two main views: an Authentication View (Login/Register) and a Dashboard View (the interactive syllabus). Firebase Authentication manages user state. On load, the app checks auth state; if logged out, it shows the Auth View. On successful login/register, it transitions to the Dashboard View. This creates a proper user-centric application flow, moving from a simple SPA to a multi-user platform. -->
     <!-- Visualization & Content Choices: 
-        - Report Info: 8-week Python curriculum. Goal: Organize/Inform. Viz: Interactive weekly navigation sidebar. Interaction: Click to display week's content. Method: HTML/JS.
-        - Report Info: Pre-class vs. In-class content. Goal: Organize. Viz: Tabbed interface. Interaction: Click to switch views. Method: HTML/JS.
-        - Report Info: List of exercises. Goal: Organize. Viz: Accordion list. Interaction: Click to expand/collapse. Method: HTML/JS.
-        - Report Info: Course difficulty progression. Goal: Inform/Compare. Viz: Bar Chart showing "Learning Load". Interaction: Hover. Library: Chart.js.
-        - Report Info: Need for deeper understanding. Goal: Explain. Viz: Modal window. Interaction: Click "Explain" button. Justification: Provides on-demand, contextual explanations powered by Gemini API. Method: JS/Fetch.
-        - Report Info: Need for practical application. Goal: Inspire/Create. Viz: Modal window. Interaction: Click "Suggest Project" button. Justification: Generates creative, relevant project ideas using Gemini API to foster practical skills. Method: JS/Fetch.
+        - Report Info: User Authentication. Goal: Secure Access. Viz: Login/Register forms. Interaction: Input fields, buttons. Justification: Standard practice for multi-user apps. Method: HTML, JS, Firebase Auth.
+        - Report Info: VPN Requirement. Goal: Inform. Viz: A clear notification box on the login page. Interaction: Static display. Justification: Proactively informs users about potential connectivity requirements for AI features. Method: HTML/Tailwind.
+        - All previous visualizations (Chart, Tabs, Accordions, Modals) are now part of the Dashboard View, accessible only after login, preserving the core learning experience within a secure context.
         -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
@@ -41,91 +38,113 @@
                 max-height: 350px;
             }
         }
-        .sidebar-btn {
-            transition: all 0.3s ease;
-        }
+        .sidebar-btn { transition: all 0.3s ease; }
         .sidebar-btn.active {
             background-color: #D4A373;
             color: white;
             transform: scale(1.05);
         }
-        .tab-btn.active {
-            border-bottom-color: #D4A373;
-            color: #D4A373;
+        .tab-btn.active { border-bottom-color: #D4A373; color: #D4A373; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .gemini-btn { background-color: #f3e9dc; color: #af8350; transition: all 0.2s ease; }
+        .gemini-btn:hover { background-color: #e9d9c7; transform: scale(1.05); }
+        .modal-overlay { transition: opacity 0.3s ease; }
+        .modal-content { transition: transform 0.3s ease; }
+        .auth-form input {
+            border: 2px solid #e2e8f0;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
-        .accordion-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-        }
-        .gemini-btn {
-            background-color: #f3e9dc;
-            color: #af8350;
-            transition: all 0.2s ease;
-        }
-        .gemini-btn:hover {
-            background-color: #e9d9c7;
-            transform: scale(1.05);
-        }
-        .modal-overlay {
-            transition: opacity 0.3s ease;
-        }
-        .modal-content {
-            transition: transform 0.3s ease;
+        .auth-form input:focus {
+            border-color: #D4A373;
+            box-shadow: 0 0 0 2px rgba(212, 163, 115, 0.3);
+            outline: none;
         }
     </style>
 </head>
 <body class="antialiased">
 
-    <div class="container mx-auto p-4 md:p-8">
-        
-        <header class="text-center mb-8 md:mb-12">
-            <h1 class="text-3xl md:text-5xl font-bold text-[#3a3a3a] mb-2">نقشه راه تعاملی یادگیری پایتون ✨</h1>
-            <p class="text-md md:text-lg text-gray-600">مجهز به دستیار هوشمند برای یادگیری عمیق‌تر</p>
-        </header>
-        
-        <section id="overview-section" class="mb-12 bg-white rounded-2xl shadow-lg p-6">
-            <h2 class="text-2xl font-bold mb-4 text-center text-[#3a3a3a]">نمای کلی بار آموزشی دوره</h2>
-            <p class="text-center text-gray-600 mb-6 max-w-3xl mx-auto">
-                این نمودار، بار مفهومی و پیچیدگی مباحث را در طول هشت هفته دوره نمایش می‌دهد. همانطور که مشاهده می‌کنید، دوره با مفاهیم پایه شروع شده و به تدریج به سمت مباحث پیچیده‌تر و پروژه‌های عملی حرکت می‌کند. این روند تدریجی به شما کمک می‌کند تا با اطمینان و بدون احساس سردرگمی، مهارت‌های خود را توسعه دهید.
-            </p>
-            <div class="chart-container">
-                <canvas id="learningLoadChart"></canvas>
+    <!-- Authentication View -->
+    <div id="auth-view">
+        <div class="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
+            <div class="max-w-md w-full mx-auto">
+                <h1 class="text-4xl font-bold text-center text-[#3a3a3a] mb-2">به پلتفرم آموزش پایتون خوش آمدید</h1>
+                <p class="text-center text-gray-600 mb-8">برای دسترسی به نقشه راه یادگیری، وارد شوید یا ثبت‌نام کنید.</p>
             </div>
-        </section>
-
-        <main class="flex flex-col md:flex-row gap-8">
-            
-            <aside id="navigation" class="w-full md:w-1/4 lg:w-1/5">
-                <div class="bg-white rounded-2xl shadow-lg p-4 sticky top-8">
-                    <h3 class="text-lg font-bold mb-4 text-center">فهرست دوره</h3>
-                    <nav class="flex flex-row md:flex-col gap-2 flex-wrap justify-center">
-                    </nav>
-                </div>
-            </aside>
-
-            <div id="content-area" class="w-full md:w-3/4 lg:w-4/5">
-                <div id="welcome-message" class="bg-white rounded-2xl shadow-lg p-8 h-full flex flex-col justify-center items-center text-center">
-                    <h2 class="text-3xl font-bold text-[#3a3a3a] mb-4">به دوره آموزش پایتون خوش آمدید!</h2>
-                    <p class="text-gray-600 text-lg mb-6 max-w-2xl">این یک راهنمای تعاملی برای سفر یادگیری شماست. برای شروع، یکی از هفته‌ها را از فهرست کنار انتخاب کنید. اکنون می‌توانید از دستیار هوشمند برای درک بهتر مفاهیم و دریافت ایده‌های پروژه‌ استفاده کنید.</p>
-                    <div class="text-4xl">🚀</div>
-                </div>
-                <div id="week-content" class="hidden">
+            <div class="max-w-md w-full mx-auto bg-white p-8 rounded-2xl shadow-lg">
+                <div class="auth-form space-y-6">
+                    <div>
+                        <label for="email" class="text-sm font-bold text-gray-600 block">ایمیل</label>
+                        <input type="email" id="email" class="w-full p-3 mt-2 text-gray-700 bg-gray-100 rounded-lg" placeholder="your@email.com">
+                    </div>
+                    <div>
+                        <label for="password" class="text-sm font-bold text-gray-600 block">رمز عبور</label>
+                        <input type="password" id="password" class="w-full p-3 mt-2 text-gray-700 bg-gray-100 rounded-lg" placeholder="••••••••">
+                    </div>
+                    <div id="auth-error" class="text-red-500 text-sm text-center"></div>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button id="login-btn" class="w-full bg-[#D4A373] text-white p-3 rounded-lg font-semibold text-lg hover:bg-opacity-90 transition-colors">ورود</button>
+                        <button id="register-btn" class="w-full bg-gray-700 text-white p-3 rounded-lg font-semibold text-lg hover:bg-opacity-90 transition-colors">ثبت نام</button>
+                    </div>
                 </div>
             </div>
-        </main>
-
-        <section id="ideas-section" class="mt-12 bg-white rounded-2xl shadow-lg p-8">
-            <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center text-[#3a3a3a]">💡 ایده‌هایی برای یک تجربه یادگیری منحصربه‌فرد</h2>
-            <p class="text-center text-gray-600 mb-8 max-w-4xl mx-auto">
-                علاوه بر محتوای اصلی دوره، این ایده‌ها طراحی شده‌اند تا فرآیند یادگیری شما را از یک آموزش سنتی فراتر برده و آن را به یک تجربه خلاقانه، تعاملی و به‌یادماندنی تبدیل کنند. استفاده از این روش‌ها به شما کمک می‌کند تا نه تنها کد بنویسید، بلکه مانند یک برنامه‌نویس واقعی فکر کنید و مسائل را حل نمایید.
-            </p>
-            <div id="ideas-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="max-w-md w-full mx-auto mt-6 p-4 bg-blue-50 border-r-4 border-blue-500 rounded-lg">
+                <div class="flex">
+                    <div class="py-1"><span class="text-2xl">💡</span></div>
+                    <div class="mr-3">
+                        <p class="text-sm text-blue-700"><b>توجه:</b> ویژگی‌های «شرح عمیق‌تر» و «پیشنهاد پروژه» از سرویس‌های هوش مصنوعی استفاده می‌کنند. ممکن است برای دسترسی به این قابلیت‌ها در برخی مناطق به <b>فیلترشکن (VPN)</b> نیاز داشته باشید.</p>
+                    </div>
+                </div>
             </div>
-        </section>
-
+        </div>
     </div>
 
+    <!-- Dashboard View (Initially Hidden) -->
+    <div id="dashboard-view" class="hidden">
+        <header class="bg-white shadow-md p-4 flex justify-between items-center">
+             <h1 class="text-xl font-bold text-[#3a3a3a]">نقشه راه یادگیری پایتون</h1>
+             <div>
+                <span id="user-email" class="text-sm text-gray-600 ml-4"></span>
+                <button id="logout-btn" class="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition-colors">خروج</button>
+             </div>
+        </header>
+
+        <div class="container mx-auto p-4 md:p-8">
+            <section id="overview-section" class="mb-12 bg-white rounded-2xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold mb-4 text-center text-[#3a3a3a]">نمای کلی بار آموزشی دوره</h2>
+                <p class="text-center text-gray-600 mb-6 max-w-3xl mx-auto">
+                    این نمودار، بار مفهومی و پیچیدگی مباحث را در طول هشت هفته دوره نمایش می‌دهد.
+                </p>
+                <div class="chart-container">
+                    <canvas id="learningLoadChart"></canvas>
+                </div>
+            </section>
+
+            <main class="flex flex-col md:flex-row gap-8">
+                <aside id="navigation" class="w-full md:w-1/4 lg:w-1/5">
+                    <div class="bg-white rounded-2xl shadow-lg p-4 sticky top-8">
+                        <h3 class="text-lg font-bold mb-4 text-center">فهرست دوره</h3>
+                        <nav class="flex flex-row md:flex-col gap-2 flex-wrap justify-center">
+                        </nav>
+                    </div>
+                </aside>
+
+                <div id="content-area" class="w-full md:w-3/4 lg:w-4/5">
+                    <div id="welcome-message" class="bg-white rounded-2xl shadow-lg p-8 h-full flex flex-col justify-center items-center text-center">
+                        <h2 class="text-3xl font-bold text-[#3a3a3a] mb-4">به داشبورد خود خوش آمدید!</h2>
+                        <p class="text-gray-600 text-lg mb-6 max-w-2xl">برای شروع، یکی از هفته‌ها را از فهرست کنار انتخاب کنید.</p>
+                        <div class="text-4xl">🚀</div>
+                    </div>
+                    <div id="week-content" class="hidden"></div>
+                </div>
+            </main>
+
+            <section id="ideas-section" class="mt-12 bg-white rounded-2xl shadow-lg p-8">
+                <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center text-[#3a3a3a]">💡 ایده‌هایی برای یک تجربه یادگیری منحصربه‌فرد</h2>
+                <div id="ideas-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </section>
+        </div>
+    </div>
+    
     <!-- Modal for Gemini Response -->
     <div id="gemini-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
         <div class="modal-content bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-2xl max-h-[80vh] flex flex-col transform scale-95">
@@ -133,14 +152,21 @@
                 <h3 id="modal-title" class="text-xl font-bold text-[#3a3a3a]">پاسخ دستیار هوشمند</h3>
                 <button id="modal-close-btn" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
             </div>
-            <div id="modal-body" class="overflow-y-auto space-y-4 text-gray-700 leading-relaxed">
-                <!-- Content will be injected here -->
-            </div>
+            <div id="modal-body" class="overflow-y-auto space-y-4 text-gray-700 leading-relaxed"></div>
         </div>
     </div>
 
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { 
+        getAuth, 
+        onAuthStateChanged,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut,
+        signInAnonymously
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-<script>
     const courseData = {
         weeks: [
             {
@@ -148,21 +174,11 @@
                 concepts: ["برنامه‌نویسی چیست", "کاربردهای پایتون", "نصب پایتون", "محیط کدنویسی", "دستور print", "متغیرها", "انواع داده"],
                 preClass: {
                     title: "محتوای قبل از کلاس",
-                    points: [
-                        "برنامه‌نویسی چیست و چه کاربردهایی دارد؟",
-                        "چرا پایتون؟ (سادگی، قدرت و کاربردهای گسترده)",
-                        "نصب پایتون و یک ویرایشگر کد (مانند VS Code)",
-                        "اولین برنامه: `print(\"Hello, World!\")`",
-                        "آشنایی با متغیرها و انواع داده‌های اصلی (رشته، عدد صحیح، عدد اعشاری)"
-                    ]
+                    points: ["برنامه‌نویسی چیست و چه کاربردهایی دارد؟","چرا پایتون؟ (سادگی، قدرت و کاربردهای گسترده)","نصب پایتون و یک ویرایشگر کد (مانند VS Code)","اولین برنامه: `print(\"Hello, World!\")`","آشنایی با متغیرها و انواع داده‌های اصلی (رشته، عدد صحیح، عدد اعشاری)"]
                 },
                 inClass: {
                     title: "فعالیت‌های داخل کلاس",
-                    exercises: [
-                        { type: "مقدماتی", task: "تعریف چند متغیر با انواع داده مختلف و چاپ کردن مقدار و نوع آن‌ها." },
-                        { type: "کاربردی", task: "نوشتن برنامه‌ای که نام و سال تولد کاربر را دریافت کرده و سن او را محاسبه و یک پیام خوشامدگویی شخصی‌سازی شده نمایش دهد." },
-                        { type: "چالشی", task: "برنامه‌ای بنویسید که قیمت یک کالا و درصد تخفیف را از کاربر بگیرد و قیمت نهایی پس از تخفیف را محاسبه و اعلام کند." }
-                    ]
+                    exercises: [{ type: "مقدماتی", task: "تعریف چند متغیر با انواع داده مختلف و چاپ کردن مقدار و نوع آن‌ها." },{ type: "کاربردی", task: "نوشتن برنامه‌ای که نام و سال تولد کاربر را دریافت کرده و سن او را محاسبه و یک پیام خوشامدگویی شخصی‌سازی شده نمایش دهد." },{ type: "چالشی", task: "برنامه‌ای بنویسید که قیمت یک کالا و درصد تخفیف را از کاربر بگیرد و قیمت نهایی پس از تخفیف را محاسبه و اعلام کند." }]
                 }
             },
             {
@@ -170,38 +186,23 @@
                 concepts: ["عملگرهای ریاضی", "متدهای رشته‌ها", "f-strings"],
                 preClass: {
                     title: "محتوای قبل از کلاس",
-                    points: [
-                        "عملگرهای ریاضی (`+`, `-`, `*`, `/`, `%`, `**`)",
-                        "توابع و متدهای مهم برای کار با رشته‌ها (مانند `len()`, `.upper()`, `.lower()`, `.strip()`, `split()`)",
-                        "فرمت‌بندی رشته‌ها با f-string"
-                    ]
+                    points: ["عملگرهای ریاضی (`+`, `-`, `*`, `/`, `%`, `**`)","توابع و متدهای مهم برای کار با رشته‌ها (مانند `len()`, `.upper()`, `.lower()`, `.strip()`, `split()`)","فرمت‌بندی رشته‌ها با f-string"]
                 },
                 inClass: {
                     title: "فعالیت‌های داخل کلاس",
-                    exercises: [
-                        { type: "مقدماتی", task: "یک عبارت ریاضی پیچیده (مثلاً محاسبه شاخص توده بدنی) را در یک خط کد بنویسید." },
-                        { type: "کاربردی", task: "برنامه‌ای بنویسید که یک جمله از کاربر بگیرد و تعداد کلمات آن را بشمارد و سپس جمله را با حروف بزرگ نمایش دهد." },
-                        { type: "چالشی", task: "یک \"تولیدکننده نام کاربری\" بسازید که نام و نام خانوادگی کاربر را گرفته و چند نام کاربری پیشنهادی (مثلاً ترکیب حرف اول نام و نام خانوادگی) تولید کند." }
-                    ]
+                    exercises: [{ type: "مقدماتی", task: "یک عبارت ریاضی پیچیده (مثلاً محاسبه شاخص توده بدنی) را در یک خط کد بنویسید." },{ type: "کاربردی", task: "برنامه‌ای بنویسید که یک جمله از کاربر بگیرد و تعداد کلمات آن را بشمارد و سپس جمله را با حروف بزرگ نمایش دهد." },{ type: "چالشی", task: "یک \"تولیدکننده نام کاربری\" بسازید که نام و نام خانوادگی کاربر را گرفته و چند نام کاربری پیشنهادی (مثلاً ترکیب حرف اول نام و نام خانوادگی) تولید کند." }]
                 }
             },
-            {
+             {
                 title: "هفته ۳: ساختارهای داده پایه",
                 concepts: ["لیست‌ها در پایتون", "دیکشنری‌ها در پایتون", "دسترسی به اعضای لیست", "ساختار کلید-مقدار"],
                 preClass: {
                     title: "محتوای قبل از کلاس",
-                    points: [
-                        "معرفی لیست‌ها (Lists): ساختن، اضافه/حذف کردن آیتم، دسترسی به اعضا از طریق اندیس.",
-                        "معرفی دیکشنری‌ها (Dictionaries): ساختار کلید-مقدار، اضافه/حذف کردن و دسترسی به مقادیر."
-                    ]
+                    points: [ "معرفی لیست‌ها (Lists): ساختن، اضافه/حذف کردن آیتم، دسترسی به اعضا از طریق اندیس.", "معرفی دیکشنری‌ها (Dictionaries): ساختار کلید-مقدار، اضافه/حذف کردن و دسترسی به مقادیر."]
                 },
                 inClass: {
                     title: "فعالیت‌های داخل کلاس",
-                    exercises: [
-                        { type: "مقدماتی", task: "یک لیست از خریدهای خانه و یک دیکشنری از اطلاعات تماس یک دوست (نام، شماره تلفن، ایمیل) بسازید." },
-                        { type: "کاربردی", task: "یک برنامه مدیریت لیست کارها (To-Do List) بنویسید که کاربر بتواند کاری را به لیست اضافه یا از آن حذف کند." },
-                        { type: "چالشی", task: "اطلاعات یک محصول (نام، قیمت، موجودی، کد محصول) را در یک دیکشنری ذخیره کنید و سپس برنامه‌ای بنویسید که با گرفتن کد محصول، اطلاعات آن را نمایش دهد." }
-                    ]
+                    exercises: [{ type: "مقدماتی", task: "یک لیست از خریدهای خانه و یک دیکشنری از اطلاعات تماس یک دوست (نام، شماره تلفن، ایمیل) بسازید." }, { type: "کاربردی", task: "یک برنامه مدیریت لیست کارها (To-Do List) بنویسید که کاربر بتواند کاری را به لیست اضافه یا از آن حذف کند." }, { type: "چالشی", task: "اطلاعات یک محصول (نام، قیمت، موجودی، کد محصول) را در یک دیکشنری ذخیره کنید و سپس برنامه‌ای بنویسید که با گرفتن کد محصول، اطلاعات آن را نمایش دهد." }]
                 }
             },
             {
@@ -209,40 +210,23 @@
                 concepts: ["دستورات شرطی if-elif-else", "عملگرهای مقایسه‌ای", "عملگرهای منطقی and-or-not"],
                 preClass: {
                     title: "محتوای قبل از کلاس",
-                    points: [
-                        "مفهوم شرط و عملگرهای مقایسه‌ای (`==`, `!=`, `>`, `<`)",
-                        "دستورات `if`, `elif`, `else`",
-                        "عملگرهای منطقی (`and`, `or`, `not`) برای ترکیب شرط‌ها"
-                    ]
+                    points: ["مفهوم شرط و عملگرهای مقایسه‌ای (`==`, `!=`, `>`, `<`)", "دستورات `if`, `elif`, `else`", "عملگرهای منطقی (`and`, `or`, `not`) برای ترکیب شرط‌ها"]
                 },
                 inClass: {
                     title: "فعالیت‌های داخل کلاس",
-                    exercises: [
-                        { type: "مقدماتی", task: "برنامه‌ای بنویسید که یک عدد بگیرد و تشخیص دهد زوج است یا فرد." },
-                        { type: "کاربردی", task: "یک برنامه برای بررسی وضعیت قبولی دانش‌آموز بنویسید. اگر نمره بالای ۵۰ بود \"قبول\"، بین ۴۰ تا ۵۰ \"مشروط\" و زیر ۴۰ \"مردود\" اعلام کند." },
-                        { type: "چالشی", task: "یک ماشین حساب ساده بسازید که دو عدد و یک عملگر (+, -, *, /) از کاربر بگیرد و بر اساس عملگر وارد شده، نتیجه را محاسبه کند (برای تقسیم، صفر بودن مقسوم‌علیه را هم بررسی کنید)." }
-                    ]
+                    exercises: [ { type: "مقدماتی", task: "برنامه‌ای بنویسید که یک عدد بگیرد و تشخیص دهد زوج است یا فرد." }, { type: "کاربردی", task: "یک برنامه برای بررسی وضعیت قبولی دانش‌آموز بنویسید. اگر نمره بالای ۵۰ بود \"قبول\"، بین ۴۰ تا ۵۰ \"مشروط\" و زیر ۴۰ \"مردود\" اعلام کند." }, { type: "چالشی", task: "یک ماشین حساب ساده بسازید که دو عدد و یک عملگر (+, -, *, /) از کاربر بگیرد و بر اساس عملگر وارد شده، نتیجه را محاسبه کند (برای تقسیم، صفر بودن مقسوم‌علیه را هم بررسی کنید)." }]
                 }
             },
-             {
+            {
                 title: "هفته ۵: حلقه‌های تکرار",
                 concepts: ["حلقه for", "حلقه while", "تابع range", "دستور break", "دستور continue"],
                 preClass: {
                     title: "محتوای قبل از کلاس",
-                    points: [
-                        "حلقه `for` برای تکرار روی اعضای یک لیست یا رشته",
-                        "تابع `range()` برای تولید دنباله‌ای از اعداد",
-                        "حلقه `while` برای تکرار تا زمانی که یک شرط برقرار باشد",
-                        "دستورهای `break` و `continue`"
-                    ]
+                    points: ["حلقه `for` برای تکرار روی اعضای یک لیست یا رشته", "تابع `range()` برای تولید دنباله‌ای از اعداد", "حلقه `while` برای تکرار تا زمانی که یک شرط برقرار باشد", "دستورهای `break` و `continue`"]
                 },
                 inClass: {
                     title: "فعالیت‌های داخل کلاس",
-                    exercises: [
-                        { type: "مقدماتی", task: "با استفاده از حلقه، اعداد ۱ تا ۲۰ را چاپ کنید. سپس همین کار را فقط برای اعداد زوج انجام دهید." },
-                        { type: "کاربردی", task: "با استفاده از لیست نمرات دانش‌آموزان از هفته قبل، میانگین نمرات کلاس را با یک حلقه محاسبه کنید." },
-                        { type: "چالشی", task: "بازی حدس عدد را پیاده‌سازی کنید. برنامه یک عدد تصادفی بین ۱ تا ۱۰۰ انتخاب کند و کاربر آنقدر حدس بزند تا عدد درست را پیدا کند. برنامه باید بعد از هر حدس اشتباه، راهنمایی کند (برو بالاتر/پایین‌تر)." }
-                    ]
+                    exercises: [{ type: "مقدماتی", task: "با استفاده از حلقه، اعداد ۱ تا ۲۰ را چاپ کنید. سپس همین کار را فقط برای اعداد زوج انجام دهید." }, { type: "کاربردی", task: "با استفاده از لیست نمرات دانش‌آموزان از هفته قبل، میانگین نمرات کلاس را با یک حلقه محاسبه کنید." }, { type: "چالشی", task: "بازی حدس عدد را پیاده‌سازی کنید. برنامه یک عدد تصادفی بین ۱ تا ۱۰۰ انتخاب کند و کاربر آنقدر حدس بزند تا عدد درست را پیدا کند. برنامه باید بعد از هر حدس اشتباه، راهنمایی کند (برو بالاتر/پایین‌تر)." }]
                 }
             },
             {
@@ -250,19 +234,11 @@
                 concepts: ["تعریف تابع با def", "پارامترهای ورودی", "مقدار خروجی با return", "کدنویسی ماژولار"],
                 preClass: {
                     title: "محتوای قبل از کلاس",
-                    points: [
-                        "چرا از توابع استفاده می‌کنیم؟ (کاهش تکرار و سازماندهی کد)",
-                        "نحوه تعریف یک تابع با `def`",
-                        "مفهوم پارامتر ورودی و مقدار خروجی (`return`)"
-                    ]
+                    points: ["چرا از توابع استفاده می‌کنیم؟ (کاهش تکرار و سازماندهی کد)", "نحوه تعریف یک تابع با `def`", "مفهوم پارامتر ورودی و مقدار خروجی (`return`)"]
                 },
                 inClass: {
                     title: "فعالیت‌های داخل کلاس",
-                    exercises: [
-                        { type: "مقدماتی", task: "تابعی بنویسید که یک عدد را گرفته و توان دوی آن را برگرداند." },
-                        { type: "کاربردی", task: "ماشین حساب هفته چهارم را بازنویسی کنید. برای هر عمل ریاضی (جمع، تفریق و...) یک تابع جداگانه بنویسید." },
-                        { type: "چالشی", task: "یک تابع برای بررسی \"پالیندروم\" (واروخوانه) بودن یک کلمه بنویسید. این تابع باید یک رشته بگیرد و `True` یا `False` برگرداند." }
-                    ]
+                    exercises: [{ type: "مقدماتی", task: "تابعی بنویسید که یک عدد را گرفته و توان دوی آن را برگرداند." }, { type: "کاربردی", task: "ماشین حساب هفته چهارم را بازنویسی کنید. برای هر عمل ریاضی (جمع، تفریق و...) یک تابع جداگانه بنویسید." }, { type: "چالشی", task: "یک تابع برای بررسی \"پالیندروم\" (واروخوانه) بودن یک کلمه بنویسید. این تابع باید یک رشته بگیرد و `True` یا `False` برگرداند." }]
                 }
             },
             {
@@ -270,19 +246,11 @@
                 concepts: ["مدیریت خطا با try-except", "خواندن از فایل", "نوشتن در فایل"],
                 preClass: {
                     title: "محتوای قبل از کلاس",
-                    points: [
-                        "مدیریت خطاها با `try` و `except` (مثلاً جلوگیری از خطا هنگام تبدیل ورودی غیرعددی به عدد)",
-                        "خواندن از فایل‌های متنی (`.txt`)",
-                        "نوشتن و اضافه کردن به فایل‌های متنی"
-                    ]
+                    points: ["مدیریت خطاها با `try` و `except` (مثلاً جلوگیری از خطا هنگام تبدیل ورودی غیرعددی به عدد)", "خواندن از فایل‌های متنی (`.txt`)", "نوشتن و اضافه کردن به فایل‌های متنی"]
                 },
                 inClass: {
                     title: "فعالیت‌های داخل کلاس",
-                    exercises: [
-                        { type: "مقدماتی", task: "محتوای یک فایل متنی را خط به خط بخوانید و چاپ کنید." },
-                        { type: "کاربردی", task: "برنامه To-Do List را طوری تغییر دهید که لیست کارها در یک فایل ذخیره شود و با هر بار اجرای برنامه، لیست قبلی از فایل خوانده شود." },
-                        { type: "چالشی", task: "یک برنامه دفترچه خاطرات ساده بسازید که هر بار اجرا می‌شود، تاریخ و زمان فعلی را به همراه یک متن از کاربر دریافت کرده و به انتهای یک فایل اضافه کند." }
-                    ]
+                    exercises: [{ type: "مقدماتی", task: "محتوای یک فایل متنی را خط به خط بخوانید و چاپ کنید." }, { type: "کاربردی", task: "برنامه To-Do List را طوری تغییر دهید که لیست کارها در یک فایل ذخیره شود و با هر بار اجرای برنامه، لیست قبلی از فایل خوانده شود." }, { type: "چالشی", task: "یک برنامه دفترچه خاطرات ساده بسازید که هر بار اجرا می‌شود، تاریخ و زمان فعلی را به همراه یک متن از کاربر دریافت کرده و به انتهای یک فایل اضافه کند." }]
                 }
             },
             {
@@ -290,20 +258,11 @@
                 concepts: ["یکپارچه‌سازی مفاهیم", "ساخت برنامه کامل", "ذخیره و بازیابی اطلاعات"],
                 preClass: {
                     title: "پروژه نهایی",
-                    points: [
-                        "در این هفته، تمام مفاهیم یادگرفته شده را در یک پروژه یکپارچه به کار می‌گیریم.",
-                        "هدف، ساخت یک **سیستم مدیریت تماس ساده** در محیط کنسول است.",
-                        "این پروژه فرصتی عالی برای تثبیت آموخته‌ها و تجربه ساخت یک برنامه کامل از صفر است."
-                    ]
+                    points: ["در این هفته، تمام مفاهیم یادگرفته شده را در یک پروژه یکپارچه به کار می‌گیریم.","هدف، ساخت یک **سیستم مدیریت تماس ساده** در محیط کنسول است.","این پروژه فرصتی عالی برای تثبیت آموخته‌ها و تجربه ساخت یک برنامه کامل از صفر است."]
                 },
                 inClass: {
                     title: "ویژگی‌های پروژه",
-                    exercises: [
-                        { type: "ویژگی ۱", task: "کاربر بتواند مخاطب جدید (نام، شماره تلفن) اضافه کند (با استفاده از دیکشنری)." },
-                        { type: "ویژگی ۲", task: "کاربر بتواند مخاطبی را بر اساس نام جستجو و اطلاعاتش را مشاهده کند." },
-                        { type: "ویژگی ۳", task: "کاربر بتواند لیست تمام مخاطبین را ببیند." },
-                        { type: "ویژگی ۴", task: "تمام اطلاعات در یک فایل `contacts.txt` ذخیره و از آن خوانده شود." }
-                    ]
+                    exercises: [{ type: "ویژگی ۱", task: "کاربر بتواند مخاطب جدید (نام، شماره تلفن) اضافه کند (با استفاده از دیکشنری)." },{ type: "ویژگی ۲", task: "کاربر بتواند مخاطبی را بر اساس نام جستجو و اطلاعاتش را مشاهده کند." },{ type: "ویژگی ۳", task: "کاربر بتواند لیست تمام مخاطبین را ببیند." },{ type: "ویژگی ۴", task: "تمام اطلاعات در یک فایل `contacts.txt` ذخیره و از آن خوانده شود." }]
                 }
             }
         ],
@@ -317,7 +276,84 @@
         ]
     };
 
-    document.addEventListener('DOMContentLoaded', () => {
+    // Firebase configuration
+    const firebaseConfig = typeof __firebase_config !== 'undefined' 
+        ? JSON.parse(__firebase_config)
+        : { apiKey: "YOUR_API_KEY", authDomain: "YOUR_AUTH_DOMAIN", projectId: "YOUR_PROJECT_ID" };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const authView = document.getElementById('auth-view');
+    const dashboardView = document.getElementById('dashboard-view');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const loginBtn = document.getElementById('login-btn');
+    const registerBtn = document.getElementById('register-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    const userEmailSpan = document.getElementById('user-email');
+    const authErrorDiv = document.getElementById('auth-error');
+
+    let isDashboardInitialized = false;
+
+    // --- Authentication Logic ---
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            authView.classList.add('hidden');
+            dashboardView.classList.remove('hidden');
+            userEmailSpan.textContent = user.email;
+            if (!isDashboardInitialized) {
+                initializeDashboard();
+                isDashboardInitialized = true;
+            }
+        } else {
+            authView.classList.remove('hidden');
+            dashboardView.classList.add('hidden');
+            userEmailSpan.textContent = '';
+        }
+    });
+
+    registerBtn.addEventListener('click', async () => {
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        authErrorDiv.textContent = '';
+        try {
+            await createUserWithEmailAndPassword(auth, email, password);
+        } catch (error) {
+            authErrorDiv.textContent = 'خطا در ثبت نام: ' + error.message;
+        }
+    });
+
+    loginBtn.addEventListener('click', async () => {
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        authErrorDiv.textContent = '';
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+        } catch (error) {
+             authErrorDiv.textContent = 'خطا در ورود: ' + error.message;
+        }
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+        try {
+            await signOut(auth);
+        } catch (error) {
+            console.error('Logout error', error);
+        }
+    });
+    
+    // Fallback for environments without user tokens
+    if (typeof __initial_auth_token === 'undefined') {
+        signInAnonymously(auth).catch(error => {
+            console.error("Anonymous sign-in failed", error);
+        });
+    }
+
+    // --- Dashboard Logic ---
+
+    function initializeDashboard() {
         const navContainer = document.querySelector('#navigation nav');
         const weekContentContainer = document.getElementById('week-content');
         const welcomeMessage = document.getElementById('welcome-message');
@@ -349,9 +385,7 @@
 
         modalCloseBtn.addEventListener('click', hideModal);
         modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                hideModal();
-            }
+            if (e.target === modal) hideModal();
         });
 
         async function callGemini(prompt) {
@@ -368,14 +402,10 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                if (!response.ok) {
-                    throw new Error(`خطای شبکه: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`خطای شبکه: ${response.status}`);
                 const result = await response.json();
 
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
+                if (result.candidates && result.candidates[0]?.content?.parts?.[0]) {
                     const text = result.candidates[0].content.parts[0].text;
                     showModal("پاسخ دستیار هوشمند", text);
                 } else {
@@ -396,13 +426,7 @@
         });
         
         const exerciseColors = {
-            "مقدماتی": "bg-blue-100 text-blue-800",
-            "کاربردی": "bg-green-100 text-green-800",
-            "چالشی": "bg-red-100 text-red-800",
-            "ویژگی ۱": "bg-purple-100 text-purple-800",
-            "ویژگی ۲": "bg-purple-100 text-purple-800",
-            "ویژگی ۳": "bg-purple-100 text-purple-800",
-            "ویژگی ۴": "bg-purple-100 text-purple-800",
+            "مقدماتی": "bg-blue-100 text-blue-800", "کاربردی": "bg-green-100 text-green-800", "چالشی": "bg-red-100 text-red-800", "ویژگی ۱": "bg-purple-100 text-purple-800", "ویژگی ۲": "bg-purple-100 text-purple-800", "ویژگی ۳": "bg-purple-100 text-purple-800", "ویژگی ۴": "bg-purple-100 text-purple-800"
         }
 
         const displayWeek = (weekIndex) => {
@@ -415,12 +439,8 @@
                     <h2 class="text-2xl md:text-3xl font-bold mb-6">${weekData.title}</h2>
                     <div class="border-b border-gray-200 mb-6">
                         <nav class="-mb-px flex space-x-6 space-x-reverse" aria-label="Tabs">
-                            <button class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 active" data-tab="pre-class">
-                                ${weekData.preClass.title}
-                            </button>
-                            <button class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="in-class">
-                                ${weekData.inClass.title}
-                            </button>
+                            <button class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 active" data-tab="pre-class">${weekData.preClass.title}</button>
+                            <button class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="in-class">${weekData.inClass.title}</button>
                         </nav>
                     </div>
                     <div id="tab-content" data-week-index="${weekIndex}"></div>
@@ -446,34 +466,23 @@
                             <span class="text-green-500 mt-1 mr-2">✔</span>
                             <p class="text-gray-700">${point.replace(/`([^`]+)`/g, '<code class="bg-gray-200 text-red-600 font-mono p-1 rounded-md text-sm">$&</code>').replace(/`/g, '')}</p>
                         </div>
-                        <button class="gemini-btn explain-btn text-sm font-semibold py-1 px-3 rounded-full mr-4" data-topic="${point.replace(/`[^`]+`/g, '').replace(/[()]/g, '')}">
-                            ✨ شرح بده
-                        </button>
-                    </li>
-                `).join('');
+                        <button class="gemini-btn explain-btn text-sm font-semibold py-1 px-3 rounded-full mr-4" data-topic="${point.replace(/`[^`]+`/g, '').replace(/[()]/g, '')}">✨ شرح بده</button>
+                    </li>`).join('');
                 tabContentContainer.innerHTML = `<ul class="space-y-2">${pointsHtml}</ul>`;
             } else if (tabId === 'in-class') {
-                 const exercisesHtml = weekData.inClass.exercises.map((ex, index) => `
+                 const exercisesHtml = weekData.inClass.exercises.map((ex) => `
                     <div class="border border-gray-200 rounded-lg mb-3">
                         <button class="accordion-btn w-full flex justify-between items-center p-4 text-right">
                             <span class="font-semibold text-gray-800 px-2 py-1 text-xs rounded-full ${exerciseColors[ex.type] || 'bg-gray-100 text-gray-800'}">${ex.type}</span>
                             <span class="transform transition-transform duration-300">▼</span>
                         </button>
-                        <div class="accordion-content px-4 pb-4">
-                            <p class="text-gray-600">${ex.task}</p>
-                        </div>
-                    </div>
-                `).join('');
-                 tabContentContainer.innerHTML = `
-                    <div>${exercisesHtml}</div>
+                        <div class="accordion-content px-4 pb-4"><p class="text-gray-600">${ex.task}</p></div>
+                    </div>`).join('');
+                 tabContentContainer.innerHTML = `<div>${exercisesHtml}</div>
                     <div class="mt-8 border-t pt-6 text-center">
-                        <button id="suggest-project-btn" class="gemini-btn font-bold py-3 px-6 rounded-lg text-lg">
-                            ✨ یک ایده پروژه برای این هفته پیشنهاد بده
-                        </button>
+                        <button id="suggest-project-btn" class="gemini-btn font-bold py-3 px-6 rounded-lg text-lg">✨ یک ایده پروژه برای این هفته پیشنهاد بده</button>
                     </div>`;
             }
-            
-            // Re-attach event listeners for dynamic content
             attachEventListeners();
         };
         
@@ -491,8 +500,7 @@
             if (projectBtn) {
                 projectBtn.addEventListener('click', () => {
                     const weekIndex = document.getElementById('tab-content').dataset.weekIndex;
-                    const weekData = courseData.weeks[weekIndex];
-                    const concepts = weekData.concepts.join(', ');
+                    const concepts = courseData.weeks[weekIndex].concepts.join(', ');
                     const prompt = `به زبان فارسی، یک ایده پروژه کوچک، خلاقانه و جذاب برای یک برنامه‌نویس مبتدی پایتون پیشنهاد بده. این پروژه باید مفاهیم این هفته را به کار بگیرد که عبارتند از: ${concepts}. لطفاً شرح پروژه، ویژگی‌های اصلی آن و یک چالش کوچک برای آن را بیان کن.`;
                     callGemini(prompt);
                 });
@@ -502,7 +510,6 @@
                 btn.addEventListener('click', () => {
                     const content = btn.nextElementSibling;
                     const icon = btn.querySelector('span:last-child');
-                    
                     if (content.style.maxHeight) {
                         content.style.maxHeight = null;
                         icon.style.transform = 'rotate(0deg)';
@@ -516,7 +523,6 @@
             });
         }
 
-
         navContainer.addEventListener('click', (e) => {
             if (e.target.tagName === 'BUTTON') {
                 document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
@@ -526,13 +532,11 @@
         });
 
         courseData.ideas.forEach(idea => {
-            const ideaCard = `
-                <div class="bg-amber-50 rounded-xl p-6 flex flex-col items-center text-center transform hover:scale-105 transition-transform duration-300">
+            const ideaCard = `<div class="bg-amber-50 rounded-xl p-6 flex flex-col items-center text-center transform hover:scale-105 transition-transform duration-300">
                     <div class="text-4xl mb-4">${idea.icon}</div>
                     <h3 class="text-lg font-bold mb-2 text-[#4A4A4A]">${idea.title}</h3>
                     <p class="text-gray-600 text-sm">${idea.description}</p>
-                </div>
-            `;
+                </div>`;
             ideasContainer.innerHTML += ideaCard;
         });
 
@@ -548,30 +552,22 @@
                     backgroundColor: 'rgba(212, 163, 115, 0.6)',
                     borderColor: 'rgba(212, 163, 115, 1)',
                     borderWidth: 1,
-                    borderRadius: 5,
+                    borderRadius: 5
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: { display: true, text: 'تعداد مفاهیم اصلی' }
-                    },
+                    y: { beginAtZero: true, title: { display: true, text: 'تعداد مفاهیم اصلی' }},
                     x: { grid: { display: false } }
                 },
                 plugins: {
                     legend: { display: false },
-                    tooltip: {
-                        direction: 'rtl',
-                        titleFont: { family: 'Vazirmatn' },
-                        bodyFont: { family: 'Vazirmatn' },
-                    }
+                    tooltip: { direction: 'rtl', titleFont: { family: 'Vazirmatn' }, bodyFont: { family: 'Vazirmatn' }}
                 }
             }
         });
-    });
+    }
 </script>
 
 </body>
