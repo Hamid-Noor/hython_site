@@ -1,99 +1,578 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>آموزش برنامه‌نویسی پایتون برای نوجوان‌ها</title>
-  <style>
-    body {
-      font-family: 'Vazirmatn', sans-serif;
-      background: #f8f8ff;
-      color: #222;
-      direction: rtl;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: #2e86de;
-      color: white;
-      padding: 2rem;
-      text-align: center;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 2rem;
-    }
-    section {
-      padding: 2rem;
-      max-width: 800px;
-      margin: auto;
-    }
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-    .card {
-      background: white;
-      padding: 1rem;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    footer {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #777;
-      margin: 2rem auto;
-    }
-    .btn {
-      display: inline-block;
-      padding: 1rem 2rem;
-      background: #20bf6b;
-      color: white;
-      border-radius: 50px;
-      text-decoration: none;
-      margin-top: 2rem;
-      font-weight: bold;
-    }
-  </style>
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نقشه راه یادگیری پایتون با هوش مصنوعی</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals (Beige, Taupe, Terracotta Accent) -->
+    <!-- Application Structure Plan: A two-column layout with a fixed weekly navigation sidebar and a dynamic main content area. This structure provides a clear, linear learning path. Tabs and accordions manage information density. New AI features (concept explanation, project suggestion) are integrated directly into the curriculum flow via modals, providing on-demand learning assistance without cluttering the main UI. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: 8-week Python curriculum. Goal: Organize/Inform. Viz: Interactive weekly navigation sidebar. Interaction: Click to display week's content. Method: HTML/JS.
+        - Report Info: Pre-class vs. In-class content. Goal: Organize. Viz: Tabbed interface. Interaction: Click to switch views. Method: HTML/JS.
+        - Report Info: List of exercises. Goal: Organize. Viz: Accordion list. Interaction: Click to expand/collapse. Method: HTML/JS.
+        - Report Info: Course difficulty progression. Goal: Inform/Compare. Viz: Bar Chart showing "Learning Load". Interaction: Hover. Library: Chart.js.
+        - Report Info: Need for deeper understanding. Goal: Explain. Viz: Modal window. Interaction: Click "Explain" button. Justification: Provides on-demand, contextual explanations powered by Gemini API. Method: JS/Fetch.
+        - Report Info: Need for practical application. Goal: Inspire/Create. Viz: Modal window. Interaction: Click "Suggest Project" button. Justification: Generates creative, relevant project ideas using Gemini API to foster practical skills. Method: JS/Fetch.
+        -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: #FDFBF7;
+            color: #4A4A4A;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+            max-height: 300px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 300px;
+                max-height: 350px;
+            }
+        }
+        .sidebar-btn {
+            transition: all 0.3s ease;
+        }
+        .sidebar-btn.active {
+            background-color: #D4A373;
+            color: white;
+            transform: scale(1.05);
+        }
+        .tab-btn.active {
+            border-bottom-color: #D4A373;
+            color: #D4A373;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .gemini-btn {
+            background-color: #f3e9dc;
+            color: #af8350;
+            transition: all 0.2s ease;
+        }
+        .gemini-btn:hover {
+            background-color: #e9d9c7;
+            transform: scale(1.05);
+        }
+        .modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+    </style>
 </head>
-<body>
+<body class="antialiased">
 
-  <header>
-    <h1>یادگیری برنامه‌نویسی با پایتون برای نوجوان‌ها</h1>
-    <p>یاد بگیر، کد بزن، امتیاز بگیر، جایزه ببر!</p>
-  </header>
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <header class="text-center mb-8 md:mb-12">
+            <h1 class="text-3xl md:text-5xl font-bold text-[#3a3a3a] mb-2">نقشه راه تعاملی یادگیری پایتون ✨</h1>
+            <p class="text-md md:text-lg text-gray-600">مجهز به دستیار هوشمند برای یادگیری عمیق‌تر</p>
+        </header>
+        
+        <section id="overview-section" class="mb-12 bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold mb-4 text-center text-[#3a3a3a]">نمای کلی بار آموزشی دوره</h2>
+            <p class="text-center text-gray-600 mb-6 max-w-3xl mx-auto">
+                این نمودار، بار مفهومی و پیچیدگی مباحث را در طول هشت هفته دوره نمایش می‌دهد. همانطور که مشاهده می‌کنید، دوره با مفاهیم پایه شروع شده و به تدریج به سمت مباحث پیچیده‌تر و پروژه‌های عملی حرکت می‌کند. این روند تدریجی به شما کمک می‌کند تا با اطمینان و بدون احساس سردرگمی، مهارت‌های خود را توسعه دهید.
+            </p>
+            <div class="chart-container">
+                <canvas id="learningLoadChart"></canvas>
+            </div>
+        </section>
 
-  <section>
-    <h2>چرا این دوره باحاله؟</h2>
-    <div class="features">
-      <div class="card">
-        📽 ویدیوهای کوتاه و بامزه<br>
-        <small>درس‌های آسون، جذاب، قابل فهم</small>
-      </div>
-      <div class="card">
-        💻 تمرین تعاملی<br>
-        <small>کدت رو داخل سایت اجرا کن</small>
-      </div>
-      <div class="card">
-        🏅 سیستم امتیاز و مدال<br>
-        <small>پیشرفت کن، قفل مرحله‌ها رو باز کن!</small>
-      </div>
-      <div class="card">
-        👩‍🏫 کلاس زنده<br>
-        <small>با استاد و همکلاسی‌هات یاد بگیر</small>
-      </div>
+        <main class="flex flex-col md:flex-row gap-8">
+            
+            <aside id="navigation" class="w-full md:w-1/4 lg:w-1/5">
+                <div class="bg-white rounded-2xl shadow-lg p-4 sticky top-8">
+                    <h3 class="text-lg font-bold mb-4 text-center">فهرست دوره</h3>
+                    <nav class="flex flex-row md:flex-col gap-2 flex-wrap justify-center">
+                    </nav>
+                </div>
+            </aside>
+
+            <div id="content-area" class="w-full md:w-3/4 lg:w-4/5">
+                <div id="welcome-message" class="bg-white rounded-2xl shadow-lg p-8 h-full flex flex-col justify-center items-center text-center">
+                    <h2 class="text-3xl font-bold text-[#3a3a3a] mb-4">به دوره آموزش پایتون خوش آمدید!</h2>
+                    <p class="text-gray-600 text-lg mb-6 max-w-2xl">این یک راهنمای تعاملی برای سفر یادگیری شماست. برای شروع، یکی از هفته‌ها را از فهرست کنار انتخاب کنید. اکنون می‌توانید از دستیار هوشمند برای درک بهتر مفاهیم و دریافت ایده‌های پروژه‌ استفاده کنید.</p>
+                    <div class="text-4xl">🚀</div>
+                </div>
+                <div id="week-content" class="hidden">
+                </div>
+            </div>
+        </main>
+
+        <section id="ideas-section" class="mt-12 bg-white rounded-2xl shadow-lg p-8">
+            <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center text-[#3a3a3a]">💡 ایده‌هایی برای یک تجربه یادگیری منحصربه‌فرد</h2>
+            <p class="text-center text-gray-600 mb-8 max-w-4xl mx-auto">
+                علاوه بر محتوای اصلی دوره، این ایده‌ها طراحی شده‌اند تا فرآیند یادگیری شما را از یک آموزش سنتی فراتر برده و آن را به یک تجربه خلاقانه، تعاملی و به‌یادماندنی تبدیل کنند. استفاده از این روش‌ها به شما کمک می‌کند تا نه تنها کد بنویسید، بلکه مانند یک برنامه‌نویس واقعی فکر کنید و مسائل را حل نمایید.
+            </p>
+            <div id="ideas-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
+        </section>
+
     </div>
 
-    <a href="#" class="btn">ثبت‌نام کن!</a>
-  </section>
+    <!-- Modal for Gemini Response -->
+    <div id="gemini-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl p-6 md:p-8 w-full max-w-2xl max-h-[80vh] flex flex-col transform scale-95">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 id="modal-title" class="text-xl font-bold text-[#3a3a3a]">پاسخ دستیار هوشمند</h3>
+                <button id="modal-close-btn" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+            </div>
+            <div id="modal-body" class="overflow-y-auto space-y-4 text-gray-700 leading-relaxed">
+                <!-- Content will be injected here -->
+            </div>
+        </div>
+    </div>
 
-  <footer>
-    ساخته شده با ❤️ برای نسل آینده برنامه‌نویس‌ها
-  </footer>
+
+<script>
+    const courseData = {
+        weeks: [
+            {
+                title: "هفته ۱: ورود به دنیای برنامه‌نویسی",
+                concepts: ["برنامه‌نویسی چیست", "کاربردهای پایتون", "نصب پایتون", "محیط کدنویسی", "دستور print", "متغیرها", "انواع داده"],
+                preClass: {
+                    title: "محتوای قبل از کلاس",
+                    points: [
+                        "برنامه‌نویسی چیست و چه کاربردهایی دارد؟",
+                        "چرا پایتون؟ (سادگی، قدرت و کاربردهای گسترده)",
+                        "نصب پایتون و یک ویرایشگر کد (مانند VS Code)",
+                        "اولین برنامه: `print(\"Hello, World!\")`",
+                        "آشنایی با متغیرها و انواع داده‌های اصلی (رشته، عدد صحیح، عدد اعشاری)"
+                    ]
+                },
+                inClass: {
+                    title: "فعالیت‌های داخل کلاس",
+                    exercises: [
+                        { type: "مقدماتی", task: "تعریف چند متغیر با انواع داده مختلف و چاپ کردن مقدار و نوع آن‌ها." },
+                        { type: "کاربردی", task: "نوشتن برنامه‌ای که نام و سال تولد کاربر را دریافت کرده و سن او را محاسبه و یک پیام خوشامدگویی شخصی‌سازی شده نمایش دهد." },
+                        { type: "چالشی", task: "برنامه‌ای بنویسید که قیمت یک کالا و درصد تخفیف را از کاربر بگیرد و قیمت نهایی پس از تخفیف را محاسبه و اعلام کند." }
+                    ]
+                }
+            },
+            {
+                title: "هفته ۲: کار با رشته‌ها و عملگرها",
+                concepts: ["عملگرهای ریاضی", "متدهای رشته‌ها", "f-strings"],
+                preClass: {
+                    title: "محتوای قبل از کلاس",
+                    points: [
+                        "عملگرهای ریاضی (`+`, `-`, `*`, `/`, `%`, `**`)",
+                        "توابع و متدهای مهم برای کار با رشته‌ها (مانند `len()`, `.upper()`, `.lower()`, `.strip()`, `split()`)",
+                        "فرمت‌بندی رشته‌ها با f-string"
+                    ]
+                },
+                inClass: {
+                    title: "فعالیت‌های داخل کلاس",
+                    exercises: [
+                        { type: "مقدماتی", task: "یک عبارت ریاضی پیچیده (مثلاً محاسبه شاخص توده بدنی) را در یک خط کد بنویسید." },
+                        { type: "کاربردی", task: "برنامه‌ای بنویسید که یک جمله از کاربر بگیرد و تعداد کلمات آن را بشمارد و سپس جمله را با حروف بزرگ نمایش دهد." },
+                        { type: "چالشی", task: "یک \"تولیدکننده نام کاربری\" بسازید که نام و نام خانوادگی کاربر را گرفته و چند نام کاربری پیشنهادی (مثلاً ترکیب حرف اول نام و نام خانوادگی) تولید کند." }
+                    ]
+                }
+            },
+            {
+                title: "هفته ۳: ساختارهای داده پایه",
+                concepts: ["لیست‌ها در پایتون", "دیکشنری‌ها در پایتون", "دسترسی به اعضای لیست", "ساختار کلید-مقدار"],
+                preClass: {
+                    title: "محتوای قبل از کلاس",
+                    points: [
+                        "معرفی لیست‌ها (Lists): ساختن، اضافه/حذف کردن آیتم، دسترسی به اعضا از طریق اندیس.",
+                        "معرفی دیکشنری‌ها (Dictionaries): ساختار کلید-مقدار، اضافه/حذف کردن و دسترسی به مقادیر."
+                    ]
+                },
+                inClass: {
+                    title: "فعالیت‌های داخل کلاس",
+                    exercises: [
+                        { type: "مقدماتی", task: "یک لیست از خریدهای خانه و یک دیکشنری از اطلاعات تماس یک دوست (نام، شماره تلفن، ایمیل) بسازید." },
+                        { type: "کاربردی", task: "یک برنامه مدیریت لیست کارها (To-Do List) بنویسید که کاربر بتواند کاری را به لیست اضافه یا از آن حذف کند." },
+                        { type: "چالشی", task: "اطلاعات یک محصول (نام، قیمت، موجودی، کد محصول) را در یک دیکشنری ذخیره کنید و سپس برنامه‌ای بنویسید که با گرفتن کد محصول، اطلاعات آن را نمایش دهد." }
+                    ]
+                }
+            },
+            {
+                title: "هفته ۴: منطق برنامه و تصمیم‌گیری",
+                concepts: ["دستورات شرطی if-elif-else", "عملگرهای مقایسه‌ای", "عملگرهای منطقی and-or-not"],
+                preClass: {
+                    title: "محتوای قبل از کلاس",
+                    points: [
+                        "مفهوم شرط و عملگرهای مقایسه‌ای (`==`, `!=`, `>`, `<`)",
+                        "دستورات `if`, `elif`, `else`",
+                        "عملگرهای منطقی (`and`, `or`, `not`) برای ترکیب شرط‌ها"
+                    ]
+                },
+                inClass: {
+                    title: "فعالیت‌های داخل کلاس",
+                    exercises: [
+                        { type: "مقدماتی", task: "برنامه‌ای بنویسید که یک عدد بگیرد و تشخیص دهد زوج است یا فرد." },
+                        { type: "کاربردی", task: "یک برنامه برای بررسی وضعیت قبولی دانش‌آموز بنویسید. اگر نمره بالای ۵۰ بود \"قبول\"، بین ۴۰ تا ۵۰ \"مشروط\" و زیر ۴۰ \"مردود\" اعلام کند." },
+                        { type: "چالشی", task: "یک ماشین حساب ساده بسازید که دو عدد و یک عملگر (+, -, *, /) از کاربر بگیرد و بر اساس عملگر وارد شده، نتیجه را محاسبه کند (برای تقسیم، صفر بودن مقسوم‌علیه را هم بررسی کنید)." }
+                    ]
+                }
+            },
+             {
+                title: "هفته ۵: حلقه‌های تکرار",
+                concepts: ["حلقه for", "حلقه while", "تابع range", "دستور break", "دستور continue"],
+                preClass: {
+                    title: "محتوای قبل از کلاس",
+                    points: [
+                        "حلقه `for` برای تکرار روی اعضای یک لیست یا رشته",
+                        "تابع `range()` برای تولید دنباله‌ای از اعداد",
+                        "حلقه `while` برای تکرار تا زمانی که یک شرط برقرار باشد",
+                        "دستورهای `break` و `continue`"
+                    ]
+                },
+                inClass: {
+                    title: "فعالیت‌های داخل کلاس",
+                    exercises: [
+                        { type: "مقدماتی", task: "با استفاده از حلقه، اعداد ۱ تا ۲۰ را چاپ کنید. سپس همین کار را فقط برای اعداد زوج انجام دهید." },
+                        { type: "کاربردی", task: "با استفاده از لیست نمرات دانش‌آموزان از هفته قبل، میانگین نمرات کلاس را با یک حلقه محاسبه کنید." },
+                        { type: "چالشی", task: "بازی حدس عدد را پیاده‌سازی کنید. برنامه یک عدد تصادفی بین ۱ تا ۱۰۰ انتخاب کند و کاربر آنقدر حدس بزند تا عدد درست را پیدا کند. برنامه باید بعد از هر حدس اشتباه، راهنمایی کند (برو بالاتر/پایین‌تر)." }
+                    ]
+                }
+            },
+            {
+                title: "هفته ۶: توابع برای نوشتن کد تمیز",
+                concepts: ["تعریف تابع با def", "پارامترهای ورودی", "مقدار خروجی با return", "کدنویسی ماژولار"],
+                preClass: {
+                    title: "محتوای قبل از کلاس",
+                    points: [
+                        "چرا از توابع استفاده می‌کنیم؟ (کاهش تکرار و سازماندهی کد)",
+                        "نحوه تعریف یک تابع با `def`",
+                        "مفهوم پارامتر ورودی و مقدار خروجی (`return`)"
+                    ]
+                },
+                inClass: {
+                    title: "فعالیت‌های داخل کلاس",
+                    exercises: [
+                        { type: "مقدماتی", task: "تابعی بنویسید که یک عدد را گرفته و توان دوی آن را برگرداند." },
+                        { type: "کاربردی", task: "ماشین حساب هفته چهارم را بازنویسی کنید. برای هر عمل ریاضی (جمع، تفریق و...) یک تابع جداگانه بنویسید." },
+                        { type: "چالشی", task: "یک تابع برای بررسی \"پالیندروم\" (واروخوانه) بودن یک کلمه بنویسید. این تابع باید یک رشته بگیرد و `True` یا `False` برگرداند." }
+                    ]
+                }
+            },
+            {
+                title: "هفته ۷: مدیریت خطا و کار با فایل‌ها",
+                concepts: ["مدیریت خطا با try-except", "خواندن از فایل", "نوشتن در فایل"],
+                preClass: {
+                    title: "محتوای قبل از کلاس",
+                    points: [
+                        "مدیریت خطاها با `try` و `except` (مثلاً جلوگیری از خطا هنگام تبدیل ورودی غیرعددی به عدد)",
+                        "خواندن از فایل‌های متنی (`.txt`)",
+                        "نوشتن و اضافه کردن به فایل‌های متنی"
+                    ]
+                },
+                inClass: {
+                    title: "فعالیت‌های داخل کلاس",
+                    exercises: [
+                        { type: "مقدماتی", task: "محتوای یک فایل متنی را خط به خط بخوانید و چاپ کنید." },
+                        { type: "کاربردی", task: "برنامه To-Do List را طوری تغییر دهید که لیست کارها در یک فایل ذخیره شود و با هر بار اجرای برنامه، لیست قبلی از فایل خوانده شود." },
+                        { type: "چالشی", task: "یک برنامه دفترچه خاطرات ساده بسازید که هر بار اجرا می‌شود، تاریخ و زمان فعلی را به همراه یک متن از کاربر دریافت کرده و به انتهای یک فایل اضافه کند." }
+                    ]
+                }
+            },
+            {
+                title: "هفته ۸: پروژه جامع بخش اول",
+                concepts: ["یکپارچه‌سازی مفاهیم", "ساخت برنامه کامل", "ذخیره و بازیابی اطلاعات"],
+                preClass: {
+                    title: "پروژه نهایی",
+                    points: [
+                        "در این هفته، تمام مفاهیم یادگرفته شده را در یک پروژه یکپارچه به کار می‌گیریم.",
+                        "هدف، ساخت یک **سیستم مدیریت تماس ساده** در محیط کنسول است.",
+                        "این پروژه فرصتی عالی برای تثبیت آموخته‌ها و تجربه ساخت یک برنامه کامل از صفر است."
+                    ]
+                },
+                inClass: {
+                    title: "ویژگی‌های پروژه",
+                    exercises: [
+                        { type: "ویژگی ۱", task: "کاربر بتواند مخاطب جدید (نام، شماره تلفن) اضافه کند (با استفاده از دیکشنری)." },
+                        { type: "ویژگی ۲", task: "کاربر بتواند مخاطبی را بر اساس نام جستجو و اطلاعاتش را مشاهده کند." },
+                        { type: "ویژگی ۳", task: "کاربر بتواند لیست تمام مخاطبین را ببیند." },
+                        { type: "ویژگی ۴", task: "تمام اطلاعات در یک فایل `contacts.txt` ذخیره و از آن خوانده شود." }
+                    ]
+                }
+            }
+        ],
+        ideas: [
+            { icon: '📖', title: 'داستان‌سرایی در آموزش', description: 'دنبال کردن یک سناریوی داستانی (مثلاً ساخت نرم‌افزار برای یک کافه) که مفاهیم انتزاعی را به دنیای واقعی گره می‌زند و یادگیری را جذاب‌تر می‌کند.' },
+            { icon: '🚀', title: 'پروژه‌های کوچک موضوعی', description: 'در انتهای هر بخش، یک پروژه کوچک ولی کامل با یک موضوع جذاب تعریف می‌شود تا تمام مباحث آن بخش را به صورت عملی به کار بگیرید.' },
+            { icon: '🕵️‍♂️', title: 'کارآگاه کد', description: 'دریافت یک کد که عمداً چند ایراد دارد و تلاش برای پیدا و رفع کردن خطاها به صورت گروهی. این یک تمرین عالی برای مهارت دیباگ کردن است.' },
+            { icon: '✨', title: 'فوق برنامه: کتابخانه‌های جذاب', description: 'معرفی کوتاه کتابخانه‌هایی مثل `Turtle` (برای نقاشی)، `Requests` (برای کار با اینترنت) و `Tkinter` (برای ساخت رابط کاربری) جهت افزایش انگیزه.' },
+            { icon: '📝', title: 'کارت‌های تقلب (Cheat Sheets)', description: 'ارائه یک خلاصه یک صفحه‌ای از مهم‌ترین دستورات و مفاهیم هر فصل برای مرور سریع و استفاده حین کدنویسی.' },
+            { icon: '🌐', title: 'ارتباط با دنیای واقعی', description: 'تلاش برای حل یک مشکل واقعی و کوچک با استفاده از پایتون، حتی اگر نتیجه یک اسکریپت ساده باشد، به یادگیری معنا می‌بخشد.' }
+        ]
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const navContainer = document.querySelector('#navigation nav');
+        const weekContentContainer = document.getElementById('week-content');
+        const welcomeMessage = document.getElementById('welcome-message');
+        const ideasContainer = document.getElementById('ideas-container');
+        const modal = document.getElementById('gemini-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+
+        const showModal = (title, content) => {
+            modalTitle.textContent = title;
+            modalBody.innerHTML = content.replace(/\n/g, '<br>');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('.modal-content').classList.remove('scale-95');
+            }, 10);
+        };
+        
+        const hideModal = () => {
+            modal.classList.add('opacity-0');
+            modal.querySelector('.modal-content').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        };
+
+        modalCloseBtn.addEventListener('click', hideModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                hideModal();
+            }
+        });
+
+        async function callGemini(prompt) {
+            showModal("دستیار هوشمند", '<div class="flex justify-center items-center p-8"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div><p class="mr-4">در حال پردازش...</p></div>');
+            
+            let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+            const payload = { contents: chatHistory };
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    throw new Error(`خطای شبکه: ${response.status}`);
+                }
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    showModal("پاسخ دستیار هوشمند", text);
+                } else {
+                    throw new Error("پاسخ معتبری از سرویس دریافت نشد.");
+                }
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                showModal("خطا", `متاسفانه مشکلی پیش آمد: ${error.message}`);
+            }
+        }
+
+        courseData.weeks.forEach((week, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'sidebar-btn w-full text-right p-3 rounded-lg bg-gray-100 hover:bg-gray-200';
+            btn.textContent = week.title;
+            btn.dataset.week = index;
+            navContainer.appendChild(btn);
+        });
+        
+        const exerciseColors = {
+            "مقدماتی": "bg-blue-100 text-blue-800",
+            "کاربردی": "bg-green-100 text-green-800",
+            "چالشی": "bg-red-100 text-red-800",
+            "ویژگی ۱": "bg-purple-100 text-purple-800",
+            "ویژگی ۲": "bg-purple-100 text-purple-800",
+            "ویژگی ۳": "bg-purple-100 text-purple-800",
+            "ویژگی ۴": "bg-purple-100 text-purple-800",
+        }
+
+        const displayWeek = (weekIndex) => {
+            const weekData = courseData.weeks[weekIndex];
+            welcomeMessage.classList.add('hidden');
+            weekContentContainer.classList.remove('hidden');
+
+            weekContentContainer.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-2xl md:text-3xl font-bold mb-6">${weekData.title}</h2>
+                    <div class="border-b border-gray-200 mb-6">
+                        <nav class="-mb-px flex space-x-6 space-x-reverse" aria-label="Tabs">
+                            <button class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 active" data-tab="pre-class">
+                                ${weekData.preClass.title}
+                            </button>
+                            <button class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="in-class">
+                                ${weekData.inClass.title}
+                            </button>
+                        </nav>
+                    </div>
+                    <div id="tab-content" data-week-index="${weekIndex}"></div>
+                </div>`;
+            
+            displayTabContent('pre-class', weekData);
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelector('.tab-btn.active').classList.remove('active');
+                    btn.classList.add('active');
+                    displayTabContent(btn.dataset.tab, weekData);
+                });
+            });
+        };
+        
+        const displayTabContent = (tabId, weekData) => {
+            const tabContentContainer = document.getElementById('tab-content');
+            if (tabId === 'pre-class') {
+                const pointsHtml = weekData.preClass.points.map(point => `
+                    <li class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50">
+                        <div class="flex items-start">
+                            <span class="text-green-500 mt-1 mr-2">✔</span>
+                            <p class="text-gray-700">${point.replace(/`([^`]+)`/g, '<code class="bg-gray-200 text-red-600 font-mono p-1 rounded-md text-sm">$&</code>').replace(/`/g, '')}</p>
+                        </div>
+                        <button class="gemini-btn explain-btn text-sm font-semibold py-1 px-3 rounded-full mr-4" data-topic="${point.replace(/`[^`]+`/g, '').replace(/[()]/g, '')}">
+                            ✨ شرح بده
+                        </button>
+                    </li>
+                `).join('');
+                tabContentContainer.innerHTML = `<ul class="space-y-2">${pointsHtml}</ul>`;
+            } else if (tabId === 'in-class') {
+                 const exercisesHtml = weekData.inClass.exercises.map((ex, index) => `
+                    <div class="border border-gray-200 rounded-lg mb-3">
+                        <button class="accordion-btn w-full flex justify-between items-center p-4 text-right">
+                            <span class="font-semibold text-gray-800 px-2 py-1 text-xs rounded-full ${exerciseColors[ex.type] || 'bg-gray-100 text-gray-800'}">${ex.type}</span>
+                            <span class="transform transition-transform duration-300">▼</span>
+                        </button>
+                        <div class="accordion-content px-4 pb-4">
+                            <p class="text-gray-600">${ex.task}</p>
+                        </div>
+                    </div>
+                `).join('');
+                 tabContentContainer.innerHTML = `
+                    <div>${exercisesHtml}</div>
+                    <div class="mt-8 border-t pt-6 text-center">
+                        <button id="suggest-project-btn" class="gemini-btn font-bold py-3 px-6 rounded-lg text-lg">
+                            ✨ یک ایده پروژه برای این هفته پیشنهاد بده
+                        </button>
+                    </div>`;
+            }
+            
+            // Re-attach event listeners for dynamic content
+            attachEventListeners();
+        };
+        
+        function attachEventListeners() {
+            document.querySelectorAll('.explain-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const topic = e.target.dataset.topic;
+                    const prompt = `به زبان فارسی و به صورت کاملا ساده و روان برای یک فرد مبتدی، مفهوم "${topic}" در برنامه‌نویسی پایتون را توضیح بده. در صورت نیاز از یک مثال کوتاه استفاده کن.`;
+                    callGemini(prompt);
+                });
+            });
+
+            const projectBtn = document.getElementById('suggest-project-btn');
+            if (projectBtn) {
+                projectBtn.addEventListener('click', () => {
+                    const weekIndex = document.getElementById('tab-content').dataset.weekIndex;
+                    const weekData = courseData.weeks[weekIndex];
+                    const concepts = weekData.concepts.join(', ');
+                    const prompt = `به زبان فارسی، یک ایده پروژه کوچک، خلاقانه و جذاب برای یک برنامه‌نویس مبتدی پایتون پیشنهاد بده. این پروژه باید مفاهیم این هفته را به کار بگیرد که عبارتند از: ${concepts}. لطفاً شرح پروژه، ویژگی‌های اصلی آن و یک چالش کوچک برای آن را بیان کن.`;
+                    callGemini(prompt);
+                });
+            }
+
+            document.querySelectorAll('.accordion-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const content = btn.nextElementSibling;
+                    const icon = btn.querySelector('span:last-child');
+                    
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+                        document.querySelectorAll('.accordion-btn span:last-child').forEach(i => i.style.transform = 'rotate(0deg)');
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.style.transform = 'rotate(180deg)';
+                    } 
+                });
+            });
+        }
+
+
+        navContainer.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                displayWeek(e.target.dataset.week);
+            }
+        });
+
+        courseData.ideas.forEach(idea => {
+            const ideaCard = `
+                <div class="bg-amber-50 rounded-xl p-6 flex flex-col items-center text-center transform hover:scale-105 transition-transform duration-300">
+                    <div class="text-4xl mb-4">${idea.icon}</div>
+                    <h3 class="text-lg font-bold mb-2 text-[#4A4A4A]">${idea.title}</h3>
+                    <p class="text-gray-600 text-sm">${idea.description}</p>
+                </div>
+            `;
+            ideasContainer.innerHTML += ideaCard;
+        });
+
+        const ctx = document.getElementById('learningLoadChart').getContext('2d');
+        const learningLoadData = [3, 3, 4, 3, 5, 4, 4, 5];
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: courseData.weeks.map((w,i) => `هفته ${i+1}`),
+                datasets: [{
+                    label: 'بار آموزشی (مفاهیم جدید)',
+                    data: learningLoadData,
+                    backgroundColor: 'rgba(212, 163, 115, 0.6)',
+                    borderColor: 'rgba(212, 163, 115, 1)',
+                    borderWidth: 1,
+                    borderRadius: 5,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'تعداد مفاهیم اصلی' }
+                    },
+                    x: { grid: { display: false } }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        direction: 'rtl',
+                        titleFont: { family: 'Vazirmatn' },
+                        bodyFont: { family: 'Vazirmatn' },
+                    }
+                }
+            }
+        });
+    });
+</script>
 
 </body>
 </html>
