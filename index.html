@@ -1,254 +1,122 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دوره جامع و عمیق پایتون با Hython | از صفر تا تحلیل داده</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Hython Dark Theme (Slate, Amber, Blue) -->
-    <!-- Application Structure Plan: A single-page landing page showcasing a comprehensive, 20-week, two-phase Python course. The structure uses a sidebar for navigation and a main content area to display weekly topics, emphasizing a deep, project-based learning path by dedicating more time to complex topics. -->
-    <!-- Visualization & Content Choices: 
-        - Report Info: 20-week, 2-phase curriculum. Goal: Organize/Inform. Viz: An interactive weekly navigation sidebar with a visual separator between phases. Interaction: Click to display content. Method: HTML/JS.
-        - Report Info: Weekly topics. Goal: Detail. Viz: A clear, single-view list for each week's topics. Method: HTML/JS.
-        - Report Info: Course progression. Goal: Compare/Inform. Viz: A 20-week stacked Bar Chart with distinct colors for each of the two phases. Interaction: Hover. Library: Chart.js.
-        - Report Info: Course enrollment. Goal: Convert. Viz: A prominent Call-to-Action (CTA) section. Interaction: A placeholder button. Method: HTML/Tailwind.
-        -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-    <style>
-        body {
-            font-family: 'Vazirmatn', sans-serif;
-            background-color: #1E293B; /* Slate-800 */
-            color: #F1F5F9; /* Slate-100 */
-        }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 1000px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px;
-            max-height: 400px;
-        }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 350px;
-                max-height: 450px;
-            }
-        }
-        .sidebar-btn {
-            transition: all 0.2s ease-in-out;
-            background-color: #334155; /* Slate-700 */
-            color: #cbd5e1; /* slate-300 */
-            border-right: 4px solid transparent;
-        }
-        .sidebar-btn:hover {
-             background-color: #475569; /* Slate-600 */
-             border-right-color: #FBBF24; /* Amber-400 */
-        }
-        .sidebar-btn.active {
-            background-color: #FBBF24; /* Amber-400 */
-            color: #1E293B; /* Slate-800 */
-            transform: scale(1.05);
-            border-right-color: #3B82F6; /* Blue-500 */
-        }
-        .cta-button {
-            transition: all 0.3s ease;
-        }
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(251, 191, 36, 0.2);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hython - مسیر یادگیری پایتون تا تحلیل داده</title>
+  <style>
+    body {
+      font-family: Vazirmatn, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f9fc;
+      color: #222;
+    }
+    header {
+      background-color: #222;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    section {
+      padding: 40px 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+    h2 {
+      color: #1e88e5;
+    }
+    .feature {
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .session-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .session-table th, .session-table td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: right;
+    }
+    .session-table th {
+      background-color: #e3f2fd;
+    }
+  </style>
 </head>
-<body class="antialiased">
-
-    <div class="container mx-auto p-4 md:p-8">
-        
-        <header class="text-center mb-12 md:mb-16">
-            <img src="1701854638250.jpg" alt="لوگوی Hython" class="w-28 h-28 mx-auto rounded-full mb-4 shadow-lg border-4 border-amber-400">
-            <h1 class="text-3xl md:text-5xl font-bold text-slate-100 mb-3">دوره جامع و عمیق پایتون با Hython</h1>
-            <p class="text-md md:text-lg text-amber-300">مسیر کامل شما از صفر تا تحلیل داده‌های واقعی</p>
-        </header>
-
-        <section id="methodology" class="mb-12 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-            <div class="bg-slate-700 p-6 rounded-2xl shadow-lg">
-                <h3 class="text-2xl font-bold mb-2 text-amber-400">🚀 پروژه محور</h3>
-                <p class="text-slate-300">از همون هفته اول، آستین‌ها رو بالا می‌زنیم و کد واقعی می‌نویسیم. هرچی یاد می‌گیریم رو فوراً توی پروژه‌های کوچیک و جذاب به کار می‌بریم.</p>
-            </div>
-            <div class="bg-slate-700 p-6 rounded-2xl shadow-lg">
-                <h3 class="text-2xl font-bold mb-2 text-amber-400">🔄 آموزش معکوس</h3>
-                <p class="text-slate-300">به جای سخنرانی‌های طولانی، ویدیوهای آموزشی رو قبل از کلاس می‌بینید و زمان کلاس رو صرف رفع اشکال و کدنویسی گروهی می‌کنیم.</p>
-            </div>
-            <div class="bg-slate-700 p-6 rounded-2xl shadow-lg">
-                <h3 class="text-2xl font-bold mb-2 text-amber-400">💡 یادگیری عمیق</h3>
-                <p class="text-slate-300">با اختصاص زمان کافی به هر مبحث، مطمئن می‌شیم که مفاهیم رو به صورت عمیق و ریشه‌ای یاد می‌گیرید و فقط سطح رو لمس نمی‌کنید.</p>
-            </div>
-        </section>
-        
-        <section id="overview-section" class="mb-12 bg-slate-700 rounded-2xl shadow-xl p-6">
-            <h2 class="text-2xl font-bold mb-4 text-center text-slate-100">نقشه راه ۲۰ هفته‌ای شما</h2>
-            <p class="text-center text-slate-300 mb-6 max-w-3xl mx-auto">
-               این دوره توی دو فاز عمیق و کامل طراحی شده. در فاز اول شما به یک برنامه‌نویس پایتون مسلط تبدیل می‌شید. توی فاز دوم، با ابزارهای اصلی علم داده به صورت حرفه‌ای کار می‌کنید.
-            </p>
-            <div class="chart-container">
-                <canvas id="learningLoadChart"></canvas>
-            </div>
-        </section>
-
-        <main class="flex flex-col md:flex-row gap-8">
-            <aside id="navigation" class="w-full md:w-1/4 lg:w-1/5">
-                <div class="bg-slate-700 rounded-2xl shadow-xl p-4 sticky top-8">
-                    <h3 class="text-lg font-bold mb-4 text-center text-slate-100">سرفصل‌های دوره</h3>
-                    <nav class="flex flex-row md:flex-col gap-2 flex-wrap justify-center">
-                    </nav>
-                </div>
-            </aside>
-
-            <div id="content-area" class="w-full md:w-3/4 lg:w-4/5">
-                <div id="welcome-message" class="bg-slate-700 rounded-2xl shadow-xl p-8 h-full flex flex-col justify-center items-center text-center">
-                    <h2 class="text-3xl font-bold text-slate-100 mb-4">مسیرت رو از اینجا شروع کن!</h2>
-                    <p class="text-slate-300 text-lg mb-6 max-w-2xl">اینجا نقشه راه تو برای تبدیل شدن به یک متخصص پایتونه. برای اینکه ببینی توی هر هفته چی یاد می‌گیری، از فهرست کنار انتخاب کن.</p>
-                    <div class="text-4xl">🐍</div>
-                </div>
-                <div id="week-content" class="hidden">
-                </div>
-            </div>
-        </main>
-        
-        <section id="registration-cta" class="mt-16 text-center bg-slate-700 p-10 rounded-2xl shadow-2xl border-t-4 border-amber-400">
-            <h2 class="text-3xl font-bold text-slate-100 mb-4">برای این سفر هیجان‌انگیز آماده‌ای؟</h2>
-            <p class="text-slate-300 text-lg mb-8 max-w-2xl mx-auto">به جامعه یادگیری Hython ملحق شو و اولین قدم رو برای ساختن آینده شغلی خودت بردار.</p>
-            <a href="#" id="register-cta-btn" class="cta-button inline-block bg-amber-400 text-slate-900 text-xl font-bold py-4 px-10 rounded-lg shadow-lg hover:bg-amber-300">
-                ثبت‌نام و شروع دوره
-            </a>
-        </section>
-
+<body>
+  <header>
+    <h1>Hython</h1>
+    <p>مسیر یادگیری پایتون تا تحلیل داده - با آموزش معکوس، تمرین زیاد، و مثال‌های واقعی</p>
+  </header>
+  
+  <section>
+    <h2>چرا Hython؟</h2>
+    <div class="feature">
+      <strong>✅ آموزش معکوس:</strong> قبل از هر جلسه، جزوه و تمرین اکتشافی دریافت می‌کنی تا کلاس رو با ذهن آماده شروع کنی.
     </div>
+    <div class="feature">
+      <strong>✅ تمرین‌های چندسطحی:</strong> از پایه تا چالشی برای تثبیت عمیق مطالب
+    </div>
+    <div class="feature">
+      <strong>✅ مثال‌های واقعی برای سنین بالای 17:</strong> تحلیل داده فروشگاه، نمره دانشجو، رفتار کاربران، پروژه‌محور
+    </div>
+    <div class="feature">
+      <strong>✅ خروجی قابل ارائه:</strong> هر چند جلسه یک پروژه تحلیلی با نمودار و گزارش برای رزومه می‌سازی
+    </div>
+  </section>
 
-<script>
-    const courseData = {
-        weeks: [
-            // Phase 1: Python Fundamentals
-            { phase: 1, title: "هفته ۱: شیرجه در دنیای کد!", topics: ["برنامه‌نویسی چیه و به چه دردی می‌خوره؟", "چرا همه میگن پایتون؟", "نصب پایتون و ابزارها - بدون دردسر!", "اولین کد ما: `print('Hello, Hython!')`"] },
-            { phase: 1, title: "هفته ۲: متغیرها و انواع داده", topics: ["متغیرها (Variables): ظرف‌هایی برای نگهداری اطلاعات", "انواع داده عددی: Integer و Float", "کار با متن‌ها: نوع داده رشته (String)", "نوع داده بولین (Boolean): فقط درست یا غلط!"] },
-            { phase: 1, title: "هفته ۳: بازی با کلمات و اعداد", topics: ["عملگرهای ریاضی برای حساب کتاب", "متدهای کاربردی رشته‌ها (از تغییر سایز تا جدا کردن کلمات)", "فرمت‌بندی قشنگ متن‌ها با f-string"] },
-            { phase: 1, title: "هفته ۴: لیست‌ها، اولین ساختار داده", topics: ["لیست‌ها (Lists): برای نگهداری چندتا چیز کنار هم", "اضافه کردن، حذف کردن و دسترسی به اعضای لیست", "متدهای پرکاربرد لیست‌ها"] },
-            { phase: 1, title: "هفته ۵: دیکشنری‌ها و تاپل‌ها", topics: ["دیکشنری‌ها (Dictionaries): بایگانی اطلاعات با ساختار کلید و مقدار", "کار با دیکشنری‌ها: افزودن، حذف و آپدیت", "تاپل‌ها (Tuples): لیست‌های غیرقابل تغییر"] },
-            { phase: 1, title: "هفته ۶: کامپیوتر رو وادار به تصمیم‌گیری کن!", topics: ["دستورات شرطی `if`, `elif` و `else`", "عملگرهای مقایسه‌ای (بزرگتره؟ کوچیکتره؟ مساویه؟)", "ترکیب شرط‌ها با `and` و `or`"] },
-            { phase: 1, title: "هفته ۷: انجام کارهای تکراری", topics: ["حلقه `for` برای چرخیدن روی لیست‌ها و رشته‌ها", "جادوی `range()` برای تولید اعداد پشت سر هم", "کار با لیست‌های تو در تو"] },
-            { phase: 1, title: "هفته ۸: حلقه While و کنترل جریان", topics: ["حلقه `while` برای تکرار تا وقتی که بخوایم", "دستورهای `break` و `continue` برای مدیریت حلقه‌ها", "پروژه کوچک: بازی حدس عدد"] },
-            { phase: 1, title: "هفته ۹: کدتو مرتب و حرفه‌ای کن!", topics: ["توابع (Functions) چی هستن و چرا کد ما رو نجات میدن؟", "ساختن اولین تابع با `def`", "دادن ورودی به تابع و گرفتن خروجی با `return`"] },
-            { phase: 1, title: "هفته ۱۰: توابع پیشرفته و مدیریت خطا", topics: ["Scope متغیرها (محلی و سراسری)", "توابع Lambda و کاربردهایشان", "جلوگیری از خراب شدن برنامه با `try` و `except`"] },
-            { phase: 1, title: "هفته ۱۱: دنیای شی‌ءگرایی (OOP)", topics: ["مفهوم شی‌ءگرایی به زبان ساده", "ساخت کلاس‌ها و اشیاء (Classes & Objects)", "ویژگی‌ها و متدها (Attributes & Methods)", "متد سازنده `__init__`"] },
-            { phase: 1, title: "هفته ۱۲: پروژه پایانی فاز اول", topics: ["کار با فایل‌ها: خواندن و نوشتن اطلاعات", "یکپارچه‌سازی تمام مباحث: از توابع تا شی‌ءگرایی", "پروژه: ساختن یک ابزار کاربردی یا بازی ساده"] },
-            // Phase 2: Data Science Toolkit
-            { phase: 2, title: "هفته ۱۳: قدرت محاسبات با NumPy", topics: ["چرا NumPy اینقدر سریع و خفنه؟", "آشنایی با آرایه‌های NumPy (قلب تپنده علم داده)", "انجام محاسبات سنگین روی هزاران داده در یک چشم به هم زدن!"] },
-            { phase: 2, title: "هفته ۱۴: تحلیل داده با Pandas (مقدماتی)", topics: ["معرفی `DataFrame`: جدول جادویی Pandas", "خوندن فایل‌های اکسل و CSV فقط با یک خط کد", "بررسی اولیه داده‌ها: `head()`, `info()`, `describe()`"] },
-            { phase: 2, title: "هفته ۱۵: انتخاب و فیلتر کردن داده در Pandas", topics: ["انتخاب ستون‌ها و ردیف‌های خاص (Indexing & Slicing)", "فیلتر کردن داده‌ها بر اساس شرط‌های مختلف", "استفاده از `loc` و `iloc`"] },
-            { phase: 2, title: "هفته ۱۶: تمیزکاری داده‌ها مثل حرفه‌ای‌ها", topics: ["پیدا کردن و مدیریت داده‌های خالی یا خراب (Missing Data)", "روش‌های مختلف پر کردن داده‌های گمشده (`fillna`)", "حذف داده‌های تکراری و اصلاح انواع داده"] },
-            { phase: 2, title: "هفته ۱۷: گروه‌بندی و ترکیب داده‌ها", topics: ["گروه‌بندی داده‌ها با `groupby()` برای تحلیل‌های عمیق‌تر", "انجام محاسبات روی گروه‌ها (مانند میانگین و جمع)", "ترکیب چندتا جدول داده با `merge()` و `concat()`"] },
-            { phase: 2, title: "هفته ۱۸: مصورسازی پایه با Matplotlib", topics: ["چرا یک نمودار خوب، بهتر از هزار خط متنه؟", "رسم نمودارهای خطی، ستونی و نقطه‌ای", "شخصی‌سازی نمودارها: عنوان، برچسب و رنگ"] },
-            { phase: 2, title: "هفته ۱۹: نمودارهای حرفه‌ای با Seaborn", topics: ["خلق نمودارهای شیک و حرفه‌ای با Seaborn", "رسم هیستوگرام و نمودار توزیع برای درک داده‌ها", "بررسی رابطه بین داده‌ها با `pairplot` و `heatmap`"] },
-            { phase: 2, title: "هفته ۲۰: پروژه پایانی دوره", topics: ["انجام یک پروژه تحلیل داده کامل از صفر تا صد", "ترکیب Pandas, NumPy و Seaborn", "ارائه نتایج و ساخت یک داستان بر اساس داده‌ها"] }
-        ]
-    };
+  <section>
+    <h2>مسیر یادگیری</h2>
+    <h3>مرحله اول: برنامه‌نویسی با پایتون (12 جلسه)</h3>
+    <table class="session-table">
+      <thead>
+        <tr><th>جلسه</th><th>موضوع</th><th>سناریو</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>متغیر و ورودی/خروجی</td><td>فرم ثبت‌نام</td></tr>
+        <tr><td>2</td><td>نوع داده و تبدیل نوع</td><td>محاسبه سن</td></tr>
+        <tr><td>3</td><td>شرط‌ها</td><td>شرایط ورود به آزمون</td></tr>
+        <tr><td>4</td><td>عملگرها</td><td>محاسبه نمره نهایی</td></tr>
+        <tr><td>5</td><td>حلقه for</td><td>چاپ علاقه‌مندی‌ها</td></tr>
+        <tr><td>6</td><td>حلقه while</td><td>رمز عبور درست</td></tr>
+        <tr><td>7</td><td>لیست</td><td>سبد خرید</td></tr>
+        <tr><td>8</td><td>دیکشنری</td><td>اطلاعات دانشجویان</td></tr>
+        <tr><td>9</td><td>توابع</td><td>ماشین حساب</td></tr>
+        <tr><td>10</td><td>فایل‌ها</td><td>ذخیره نمرات</td></tr>
+        <tr><td>11</td><td>شی‌گرایی</td><td>کلاس دانشجو</td></tr>
+        <tr><td>12</td><td>پروژه پایانی</td><td>سیستم ثبت‌نام</td></tr>
+      </tbody>
+    </table>
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const navContainer = document.querySelector('#navigation nav');
-        const weekContentContainer = document.getElementById('week-content');
-        const welcomeMessage = document.getElementById('welcome-message');
-        
-        courseData.weeks.forEach((week, index) => {
-            if (index === 12) { // Separator before Phase 2
-                const separator = document.createElement('div');
-                separator.className = "w-full my-3 border-t-2 border-slate-600 border-dashed";
-                separator.innerHTML = `<h4 class="text-center text-amber-300 -mt-3 bg-slate-700 px-2 text-sm font-bold">فاز دوم: علم داده</h4>`;
-                navContainer.appendChild(separator);
-            }
+    <h3>مرحله دوم: تحلیل داده (10 جلسه)</h3>
+    <table class="session-table">
+      <thead>
+        <tr><th>جلسه</th><th>موضوع</th><th>سناریو</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>مقدمه تحلیل و CSV</td><td>فایل ثبت‌نام</td></tr>
+        <tr><td>2</td><td>NumPy: آرایه‌ها</td><td>تحلیل نمرات</td></tr>
+        <tr><td>3</td><td>NumPy: فیلتر و ماسک</td><td>فیلتر نمرات بالا</td></tr>
+        <tr><td>4</td><td>Pandas: DataFrame</td><td>فروشگاه آنلاین</td></tr>
+        <tr><td>5</td><td>فیلتر/گروه‌بندی</td><td>گزارش شهر به شهر</td></tr>
+        <tr><td>6</td><td>پاکسازی داده</td><td>رفع مقادیر گمشده</td></tr>
+        <tr><td>7</td><td>آمار توصیفی</td><td>تحلیل میانگین و مد</td></tr>
+        <tr><td>8</td><td>Matplotlib</td><td>نمودار قیمت محصولات</td></tr>
+        <tr><td>9</td><td>Seaborn</td><td>رابطه سن و معدل</td></tr>
+        <tr><td>10</td><td>پروژه تحلیل</td><td>تحلیل داده دانشجویی یا فروش</td></tr>
+      </tbody>
+    </table>
+  </section>
 
-            const btn = document.createElement('button');
-            btn.className = 'sidebar-btn w-full text-right p-3 rounded-lg';
-            btn.textContent = week.title;
-            btn.dataset.week = index;
-            navContainer.appendChild(btn);
-        });
-        
-        const displayWeek = (weekIndex) => {
-            const weekData = courseData.weeks[weekIndex];
-            welcomeMessage.classList.add('hidden');
-            weekContentContainer.classList.remove('hidden');
-
-            const topicsHtml = weekData.topics.map(topic => `
-                <li class="flex items-start p-3 rounded-lg bg-slate-800 hover:bg-slate-600 transition-colors">
-                    <span class="text-amber-400 mt-1 mr-2 text-xl">🔸</span>
-                    <p class="text-slate-200">${topic.replace(/`([^`]+)`/g, '<code class="bg-slate-900 text-amber-300 font-mono p-1 rounded-md text-sm">$&</code>').replace(/`/g, '')}</p>
-                </li>`).join('');
-
-            weekContentContainer.innerHTML = `
-                <div class="bg-slate-700 rounded-2xl shadow-xl p-6 md:p-8">
-                    <h2 class="text-2xl md:text-3xl font-bold mb-6 text-slate-100">${weekData.title}</h2>
-                    <h3 class="text-xl font-semibold mb-4 text-amber-400 border-r-4 border-amber-400 pr-4">توی این هفته قراره یاد بگیریم:</h3>
-                    <ul class="space-y-3">${topicsHtml}</ul>
-                </div>`;
-        };
-
-        navContainer.addEventListener('click', (e) => {
-            const button = e.target.closest('.sidebar-btn');
-            if (button) {
-                document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
-                button.classList.add('active');
-                displayWeek(button.dataset.week);
-            }
-        });
-
-        const ctx = document.getElementById('learningLoadChart').getContext('2d');
-        const phase1Data = [2, 3, 3, 3, 4, 4, 3, 4, 3, 4, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0];
-        const phase2Data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 5, 5, 5, 4, 5, 6];
-
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: courseData.weeks.map((w, i) => `هفته ${i + 1}`),
-                datasets: [
-                    { label: 'فاز اول: مبانی پایتون', data: phase1Data, backgroundColor: 'rgba(59, 130, 246, 0.7)', borderColor: 'rgba(59, 130, 246, 1)', borderWidth: 1, borderRadius: 5 },
-                    { label: 'فاز دوم: علم داده', data: phase2Data, backgroundColor: 'rgba(251, 191, 36, 0.7)', borderColor: 'rgba(251, 191, 36, 1)', borderWidth: 1, borderRadius: 5 },
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: { stacked: true, ticks: { color: '#94a3b8' }, grid: { display: false } },
-                    y: { 
-                        stacked: true,
-                        beginAtZero: true,
-                        title: { display: true, text: 'سطح پیچیدگی', color: '#94a3b8' },
-                        ticks: { color: '#94a3b8' },
-                        grid: { color: '#334155' }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: { color: '#cbd5e1' }
-                    },
-                    tooltip: {
-                        direction: 'rtl',
-                        titleFont: { family: 'Vazirmatn' },
-                        bodyFont: { family: 'Vazirmatn' },
-                        backgroundColor: '#0F172A',
-                        titleColor: '#FBBF24',
-                        mode: 'index'
-                    }
-                }
-            }
-        });
-    });
-</script>
-
+  <section>
+    <h2>شروع کن!</h2>
+    <p>همین حالا اولین جزوه پیش‌کلاس را دانلود کن و یادگیری را به سبک معکوس شروع کن.👇</p>
+    <p><a href="#">دانلود جزوه جلسه اول</a></p>
+  </section>
 </body>
 </html>
